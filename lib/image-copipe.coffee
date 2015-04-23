@@ -1,14 +1,12 @@
 module.exports =
   config:
-    hoge:
-      type: 'number'
-    accessToken:
+    gyazoAccessToken:
       type: 'string'
+      default: ''
 
+  # packageが有効であれば、まず最初にこの関数が呼ばれる。
+  # package.jsonにactivationCommandsが定義されていれば、そのコマンドが実行されるまで遅延される。
   activate: (state) ->
-    # Events subscribed to in atom's system can be easily cleaned up with a CompositeDisposable
-    #@subscriptions = new CompositeDisposable
-    #@subscriptions.add atom.commands.add 'atom-workspace', 'image-copipe:activate': => @attachEvent()
     @attachEvent()
 
   attachEvent: ->
@@ -21,6 +19,9 @@ module.exports =
         img = clipboard.readImage()
         return if img.isEmpty()
 
+        # スクリーンショットではなくブラウザで画像をコピーするとTextが入る場合があるので、クリア
+        clipboard.writeText('')
+
         # insert loading text
         editor = atom.workspace.getActiveEditor()
         range = editor.insertText('Uploading...');
@@ -30,12 +31,15 @@ module.exports =
           editor.setTextInBufferRange(range[0], markdown)
 
   post: (img, callback) ->
+    accessToken = atom.config.get('image-copipe.gyazoAccessToken')
+    callback('error: access token is required.') unless accessToken
+
     # gyazoにupload
     req = require('request')
     options = {
       uri: 'https://upload.gyazo.com/api/upload'
       formData: {
-        access_token: atom.config.get('image-copipe.accessToken') || '55de220ab12e95cc0885634bc0713886815f79805373a614efd8da7bd806c768'
+        access_token: accessToken
         imagedata: img.toPng()
       }
       json: true
@@ -44,4 +48,4 @@ module.exports =
       if (!error && response.statusCode == 200)
         callback(body.url) if callback && body.url
       else
-        console.log('error: '+ response.statusCode)
+        callback('error: '+ response.statusCode)

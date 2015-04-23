@@ -3,10 +3,7 @@
   "main": "./lib/image-copipe",
   "version": "0.0.1",
   "description": "Easy image uploads by copy and paste.",
-  "//activationCommands": {
-    "atom-workspace": "image-copipe:activate"
-  },
-  "repository": "https://github.com/atom/image-copipe",
+  "repository": "https://github.com/sagaraya/image-copipe",
   "license": "MIT",
   "engines": {
     "atom": ">=0.174.0 <2.0.0"
