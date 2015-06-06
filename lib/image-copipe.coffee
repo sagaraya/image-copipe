@@ -1,9 +1,4 @@
 module.exports =
-  config:
-    gyazoAccessToken:
-      type: 'string'
-      default: ''
-
   # packageが有効であれば、まず最初にこの関数が呼ばれる。
   # package.jsonにactivationCommandsが定義されていれば、そのコマンドが実行されるまで遅延される。
   activate: (state) ->
@@ -25,27 +20,27 @@ module.exports =
         # insert loading text
         editor = atom.workspace.getActiveEditor()
         range = editor.insertText('Uploading...');
-        @post img, (imgUrl) ->
+        @postToImgur img, (imgUrl) ->
           # replace loading text to markdown img format
           markdown = "![](#{imgUrl})"
           editor.setTextInBufferRange(range[0], markdown)
 
-  post: (img, callback) ->
-    accessToken = atom.config.get('image-copipe.gyazoAccessToken')
-    callback('error: access token is required.') unless accessToken
+  postToImgur: (img, callback) ->
+    clientId = "1ff14dd2c113a60"
 
-    # gyazoにupload
     req = require('request')
     options = {
-      uri: 'https://upload.gyazo.com/api/upload'
+      uri: 'https://api.imgur.com/3/upload'
+      headers: {
+        Authorization: "Client-ID " + clientId
+      }
       formData: {
-        access_token: accessToken
-        imagedata: img.toPng()
+        image: img.toPng()
       }
       json: true
     }
     req.post options, (error, response, body) ->
       if (!error && response.statusCode == 200)
-        callback(body.url) if callback && body.url
+        callback(body.data.link) if callback && body.data && body.data.link
       else
         callback('error: '+ response.statusCode)
