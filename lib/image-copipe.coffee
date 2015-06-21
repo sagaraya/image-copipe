@@ -18,7 +18,7 @@ module.exports =
         clipboard.writeText('')
 
         # insert loading text
-        editor = atom.workspace.getActiveEditor()
+        editor = atom.workspace.getActiveTextEditor()
         range = editor.insertText('Uploading...');
         @postToImgur img, (imgUrl) ->
           # replace loading text to markdown img format
