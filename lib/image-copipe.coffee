@@ -22,7 +22,6 @@ module.exports =
         # スクリーンショットではなくブラウザで画像をコピーするとTextが入る場合があるので、クリア
         clipboard.writeText('')
         save_to_flag = atom.config.get('image-copipe.SaveTo')
-        # insert loading text
         if save_to_flag=='local path /pic'
           img_dir = atom.config.get('image-copipe.ImagePath')
           img_file_name = (new Date().toISOString())+'.png'
@@ -38,6 +37,7 @@ module.exports =
           markdown = "![](#{img_relateive_path})"
           editor.insertText(markdown)
         else
+          # insert loading text
           editor = atom.workspace.getActiveTextEditor()
           range = editor.insertText('Uploading...');
           @postToImgur img, (imgUrl) ->
