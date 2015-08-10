@@ -1,6 +1,11 @@
 module.exports =
   # packageが有効であれば、まず最初にこの関数が呼ばれる。
   # package.jsonにactivationCommandsが定義されていれば、そのコマンドが実行されるまで遅延される。
+  config:
+    SaveTo:
+      type: 'string'
+      default: 'gyazo.com'
+      enum: ['local path /pic','gyazo.com']
   activate: (state) ->
     @attachEvent()
 
@@ -16,14 +21,30 @@ module.exports =
 
         # スクリーンショットではなくブラウザで画像をコピーするとTextが入る場合があるので、クリア
         clipboard.writeText('')
-
+        save_to_flag = atom.config.get('image-copipe.SaveTo')
         # insert loading text
-        editor = atom.workspace.getActiveTextEditor()
-        range = editor.insertText('Uploading...');
-        @postToImgur img, (imgUrl) ->
-          # replace loading text to markdown img format
-          markdown = "![](#{imgUrl})"
-          editor.setTextInBufferRange(range[0], markdown)
+        if save_to_flag=='local path /pic'
+          img_dir = atom.config.get('image-copipe.ImagePath')
+          img_file_name = (new Date().toISOString())+'.png'
+          editor = atom.workspace.getActiveTextEditor()
+          {File, Directory} = require 'atom'
+          cur_file_path = new Directory(editor.getPath())
+          img_real_path = cur_file_path.getParent().getParent().getSubdirectory(img_dir).getFile(img_file_name).getPath()
+          console.log img_real_path
+          img_relateive_path = '/'+img_dir+'/'+img_file_name
+          fs = require "fs"
+          fs.writeFile img_real_path, img.toPng(), (error) ->
+            console.error("Error writing file", error) if error
+          markdown = "![](#{img_relateive_path})"
+          editor.insertText(markdown)
+        else
+          editor = atom.workspace.getActiveTextEditor()
+          range = editor.insertText('Uploading...');
+          @postToImgur img, (imgUrl) ->
+            # replace loading text to markdown img format
+            markdown = "![](#{imgUrl})"
+            editor.setTextInBufferRange(range[0], markdown)
+
 
   postToImgur: (img, callback) ->
     clientId = "1ff14dd2c113a60"

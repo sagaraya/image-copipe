@@ -13,6 +13,8 @@ Copy image or take screenshot, then paste on editor like Github, Qiita and Slack
  - copy image by context menu
 2. paste image by `cmd + v`
 
+The image will be uploaded to gyazo.com by default.
+Alternatively, you may choose to save the image to local path on package setting page.
 
 ## Dependency
 image-copipe use imgur api.
