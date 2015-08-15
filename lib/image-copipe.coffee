@@ -23,7 +23,7 @@ module.exports =
         clipboard.writeText('')
         save_to_flag = atom.config.get('image-copipe.SaveTo')
         if save_to_flag=='local path /pic'
-          img_dir = atom.config.get('image-copipe.ImagePath')
+          img_dir = 'pic'
           img_file_name = (new Date().toISOString())+'.png'
           editor = atom.workspace.getActiveTextEditor()
           {File, Directory} = require 'atom'
