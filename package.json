@@ -9,6 +9,7 @@
     "atom": ">=0.174.0 <2.0.0"
   },
   "dependencies": {
-    "request": "~2.55.0"
+    "request": "~2.55.0",
+    "date-utils": "^1.2.16"
   }
 }
